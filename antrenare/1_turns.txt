@@ -1,0 +1,14 @@
+Player1 1
+Player2 5
+Player1 11
+Player2 14
+Player1 18
+Player2 21
+Player1 24
+Player2 28
+Player1 31
+Player2 34
+Player1 36
+Player2 39
+Player1 43
+Player2 48

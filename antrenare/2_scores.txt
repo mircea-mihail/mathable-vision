@@ -1,0 +1,12 @@
+Player2 1 309
+Player1 7 94
+Player2 13 84
+Player1 16 12
+Player2 19 52
+Player1 23 220
+Player2 29 62
+Player1 33 55
+Player2 39 46
+Player1 41 18
+Player2 44 112
+Player1 47 16
