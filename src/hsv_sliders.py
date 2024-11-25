@@ -5,7 +5,7 @@ import numpy as np
 def nothing(x):
     pass
 
-def hsv_sliders(p_img, p_scale_x, p_scale_y):
+def hsv_sliders(p_img, p_x, p_y):
     # Create a window
     cv2.namedWindow('image')
 
@@ -26,9 +26,8 @@ def hsv_sliders(p_img, p_scale_x, p_scale_y):
     hMin = sMin = vMin = hMax = sMax = vMax = 0
     phMin = psMin = pvMin = phMax = psMax = pvMax = 0
 
-    img = cv2.imread(p_img)
-    img = cv2.resize(img, (0, 0), fx=p_scale_x, fy=p_scale_y)
-    output = img
+    p_img = cv2.resize(p_img, (0, 0), fx=p_x, fy=p_y)
+    output = p_img
     waitTime = 33
 
     while(1):
@@ -47,9 +46,9 @@ def hsv_sliders(p_img, p_scale_x, p_scale_y):
         upper = np.array([hMax, sMax, vMax])
 
         # Create HSV Image and threshold into a range.
-        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        hsv = cv2.cvtColor(p_img, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(hsv, lower, upper)
-        output = cv2.bitwise_and(img,img, mask= mask)
+        output = cv2.bitwise_and(p_img, p_img, mask=mask)
 
         # Print if there is a change in HSV value
         if( (phMin != hMin) | (psMin != sMin) | (pvMin != vMin) | (phMax != hMax) | (psMax != sMax) | (pvMax != vMax) ):
