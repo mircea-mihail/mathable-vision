@@ -24,12 +24,60 @@ def get_max_countour(mask):
             possible_top_right = contours[i].squeeze()[np.argmin(diff)]
             possible_bottom_left = contours[i].squeeze()[np.argmax(diff)]
 
-            if cv.contourArea(np.array([[possible_top_left],[possible_top_right],[possible_bottom_right],[possible_bottom_left]])) > max_area:
-                max_area = cv.contourArea(np.array([[possible_top_left],[possible_top_right],[possible_bottom_right],[possible_bottom_left]]))
+            current_area = cv.contourArea(np.array([[possible_top_left],[possible_top_right],[possible_bottom_right],[possible_bottom_left]])) 
+
+            if current_area > max_area:
+                max_area = current_area
+
                 top_left = possible_top_left
                 bottom_right = possible_bottom_right
                 top_right = possible_top_right
                 bottom_left = possible_bottom_left
+
+    return [top_left, top_right, bottom_right, bottom_left]
+
+def get_digits_contour(mask):
+    contours, _ = cv.findContours(mask,  cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    print("contururi", len(contours))
+    max_area = 0
+
+    top_left = [0, 0]
+    top_right = [0, 0]
+    bottom_left = [0, 0]
+    bottom_right = [0, 0]
+   
+    for i in range(len(contours)):
+        top = None
+        bottom = None
+        left = None
+        right = None
+
+        for point in contours[i].squeeze():
+            if top is None or point[1] < top:
+                top = point[1] 
+
+            if bottom is None or point[1] > bottom:
+                bottom = point[1]
+
+            if left is None or point[0] < left:
+                left = point[0]
+
+            if right is None or point[0] > right:
+                right = point[0]
+
+        current_contour = np.array([[top, left],[top, right],[bottom, right],[bottom, left]])
+        print("current contour: ", current_contour)
+
+        current_area = cv.contourArea(current_contour)
+        print(current_area)
+
+        if  current_area > max_area:
+            max_area = current_area 
+
+            top_left = [top, left]
+            bottom_right = [bottom, right] 
+            top_right = [top, right]
+            bottom_left = [bottom, left]
 
     return [top_left, top_right, bottom_right, bottom_left]
 
