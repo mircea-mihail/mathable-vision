@@ -14,7 +14,9 @@ TOTAL_SQUARES = 14
 SQUARE_WIDTH = 100
 
 SQUARE_TRIM_PX = 6
-SQUARE_WIDTH = BOARD_WIDTH / TOTAL_SQUARES
+SQUARE_WIDTH = int(BOARD_WIDTH / TOTAL_SQUARES)
+
+MAX_PX_VAL = 255
 
 # trimming
 TRIM_BIAS = 1 
@@ -33,6 +35,7 @@ SQUARE_MAX_SATURATION = 65
 SQUARE_MIN_VALUE = 175
 
 NUM_MAX_HUE = 90
+MIN_SIMILITUDE = 0.6
 
 DIGIT_FILTER_SIZE = 150
 
@@ -40,11 +43,16 @@ HUE = 0
 SATURATION = 1
 VALUE = 2
 
+# --------------------------- MISC
+X = 0
+Y = 1
+
 # --------------------------- PATHS
 INPUT_DIR = "../antrenare"
 OUTPUT_DIR = "../vizualizare"
+TEMPLATE_DIR = "../templates"
 
-TEMPLATE_PATH = "../imagini_auxiliare/03.jpg"
+TEMPLATE_PATH = "../imagini_auxiliare/04.jpg"
 
 NC = 0 # no constraint
 PL = 1 # plus

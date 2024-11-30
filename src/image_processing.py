@@ -111,14 +111,16 @@ def remap_square(mask):
     square_destination = np.array(
     [
         [0,0],
-        [BOARD_WIDTH,0],
-        [BOARD_WIDTH,BOARD_WIDTH],
-        [0,BOARD_WIDTH]
+        [SQUARE_WIDTH,0],
+        [SQUARE_WIDTH,SQUARE_WIDTH],
+        [0,SQUARE_WIDTH]
     ], dtype = "float32")
 
     mapping = cv.getPerspectiveTransform(bounds, square_destination)
-    mask = cv.warpPerspective(mask, mapping, (BOARD_WIDTH, BOARD_WIDTH))
+    mask = cv.warpPerspective(mask, mapping, (SQUARE_WIDTH, SQUARE_WIDTH))
 
+    mask = mask == MAX_PX_VAL
+    mask = mask * MAX_PX_VAL
     return mask
 
 # filters noise, thickens and remaps the digit to fit the whole square
@@ -140,6 +142,7 @@ def process_square(p_sq):
     inflation = 4
     kernel = np.ones((inflation, inflation), np.uint8) 
     mask = cv.dilate(mask, kernel, iterations=1) 
+    # mask = cv.threshold(mask, 255/2, 256, cv.THRESH_BINARY)
 
     return remap_square(mask)
 
@@ -193,3 +196,62 @@ def get_digits_contour(mask):
 
     return [top_left, top_right, bottom_right, bottom_left]
     
+# --------------------------------------------------- templates
+
+# generates the template files using the best of the provided refference photos
+def generate_templates():
+    tpl = cv.imread(TEMPLATE_PATH)
+
+    board = get_trimmed(tpl)
+    board = process_board(board)
+    idx = 0
+
+    # sq = get_square(board, 0, 0)
+    # mask = process_square(sq)
+    # print(mask[0, 50])
+    # plt.imshow(mask)
+
+    for i in range(0, 13, 2):
+        for j in range(0, 13, 2):
+            if i == 12 and j > 6:
+                return 
+
+            sq = get_square(board, j, i)
+            mask = process_square(sq)
+
+            cv.imwrite(os.path.join(TEMPLATE_DIR, str(NUMBERS[idx]) + ".png"), mask)
+
+            idx += 1 
+
+# loads the templates from the template directory
+def load_templates():
+    tpl_names = os.listdir(TEMPLATE_DIR)
+    tpl_names = sorted([template for template in tpl_names], key=lambda x: int(os.path.splitext(x)[0]))
+    templates = {}
+
+    for tpl in tpl_names:
+       templates[int(os.path.splitext(tpl)[0])] = cv.cvtColor(cv.imread(os.path.join(TEMPLATE_DIR, tpl)), cv.COLOR_BGR2GRAY)
+
+    return templates
+
+# returns the best match between the given image and a template
+def get_similitude(img, templates):
+    best_score = 0
+    best_number = -1
+    for cur_nr in NUMBERS:
+        template = templates[cur_nr]
+        sim_score = 0
+        # for i in range(SQUARE_WIDTH):
+        #     for j in range(SQUARE_WIDTH):
+        #         if template[i][j] == img[i][j]:
+        #             sim_score += 1
+        
+        sim_score = np.sum(img == template)
+
+        if sim_score > best_score:  
+            best_score = sim_score
+            best_number = cur_nr
+
+    if best_score / (SQUARE_WIDTH * SQUARE_WIDTH) < MIN_SIMILITUDE:
+        return -1
+    return best_number
