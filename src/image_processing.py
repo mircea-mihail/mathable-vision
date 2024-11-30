@@ -38,9 +38,8 @@ def get_max_countour(mask):
 
 def get_digits_contour(mask):
     contours, _ = cv.findContours(mask,  cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-    print("contururi", len(contours))
-    max_area = 0
-
+    
+    populated_corners = False
     top_left = [0, 0]
     top_right = [0, 0]
     bottom_left = [0, 0]
@@ -66,18 +65,23 @@ def get_digits_contour(mask):
                 right = point[0]
 
         current_contour = np.array([[top, left],[top, right],[bottom, right],[bottom, left]])
-        print("current contour: ", current_contour)
+        # print("current contour: ", current_contour)
 
         current_area = cv.contourArea(current_contour)
-        print(current_area)
 
-        if  current_area > max_area:
-            max_area = current_area 
+        if  current_area > DIGIT_FILTER_SIZE:
+            if populated_corners:
+                top = min(top, top_left[1])
+                bottom = max(bottom, bottom_right[1])
+                left = min(left, top_left[0])
+                right = max(right, bottom_right[0])
 
-            top_left = [top, left]
-            bottom_right = [bottom, right] 
-            top_right = [top, right]
-            bottom_left = [bottom, left]
+            top_left = [left, top]
+            bottom_right = [right, bottom] 
+            top_right = [right, top]
+            bottom_left = [left, bottom]
+
+            populated_corners = True
 
     return [top_left, top_right, bottom_right, bottom_left]
 
