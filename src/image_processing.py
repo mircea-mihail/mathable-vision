@@ -85,6 +85,18 @@ def print_lines(board):
         )
     return board
 
+# processes the board for better extraction of digits
+def process_board(board):
+    board = cv.medianBlur(board, 5)
+
+    alpha = 2
+    beta = -0.5
+    gamma = 0
+    flt_board = cv.addWeighted(src1=board, src2=board, alpha=alpha, beta=beta, gamma=gamma)
+    flt_board = 255 - flt_board
+
+    return flt_board
+
 # --------------------------------------------------- digit squares
 
 # returns a trimmed matrix of a square
@@ -93,6 +105,44 @@ def get_square(board, p_x_pos, p_y_pos):
         int(p_y_pos*SQUARE_WIDTH + SQUARE_TRIM_PX) : int((p_y_pos+1) * SQUARE_WIDTH - SQUARE_TRIM_PX), 
         int(p_x_pos*SQUARE_WIDTH + SQUARE_TRIM_PX) : int((p_x_pos+1) * SQUARE_WIDTH - SQUARE_TRIM_PX)
     ].copy()
+
+# remaps the square to only contain the inner digit, no white border around it
+def remap_square(mask):
+    bounds = np.array(get_digits_contour(mask), dtype = "float32")
+    square_destination = np.array(
+    [
+        [0,0],
+        [BOARD_WIDTH,0],
+        [BOARD_WIDTH,BOARD_WIDTH],
+        [0,BOARD_WIDTH]
+    ], dtype = "float32")
+
+    mapping = cv.getPerspectiveTransform(bounds, square_destination)
+    mask = cv.warpPerspective(mask, mapping, (BOARD_WIDTH, BOARD_WIDTH))
+
+    return mask
+
+# filters noise, thickens and remaps the digit to fit the whole square
+def process_square(p_sq):
+    hsv_sq = cv.cvtColor(p_sq, cv.COLOR_BGR2HSV)
+    sat_mask = np.zeros((p_sq.shape[0], p_sq.shape[1]), np.uint8)
+    val_mask = np.zeros((p_sq.shape[0], p_sq.shape[1]), np.uint8)
+
+    _, val_mask = cv.threshold(hsv_sq[:, :, VALUE], SQUARE_MIN_VALUE, 256, cv.THRESH_BINARY)
+    _, sat_mask = cv.threshold(hsv_sq[:, :, VALUE], 256, SQUARE_MAX_SATURATION, cv.THRESH_BINARY)
+
+    mask = cv.bitwise_or(sat_mask, val_mask)
+
+    filter_size = 3
+    kill_noise_kernel = np.ones((filter_size, filter_size), np.uint8)
+    mask = cv.erode(mask, kill_noise_kernel, iterations=1)
+    # mask = cv2.dilate(mask, kill_noise_kernel, iterations=1)
+
+    inflation = 4
+    kernel = np.ones((inflation, inflation), np.uint8) 
+    mask = cv.dilate(mask, kernel, iterations=1) 
+
+    return remap_square(mask)
 
 # returns the points that border the actual digits for a remapping
 def get_digits_contour(mask):
