@@ -40,8 +40,7 @@ def get_max_countour(mask):
     return [top_left, top_right, bottom_right, bottom_left]
 
 # remaps the board using the blue on brown contrast between the board and the table
-def get_trimmed(photo):
-    board = cv.imread(os.path.join(INPUT_DIR, photo))
+def get_trimmed(board):
     hsv_board = cv.cvtColor(board, cv.COLOR_BGR2HSV)
 
     mask = np.zeros((board.shape[0], board.shape[1]), np.uint8)

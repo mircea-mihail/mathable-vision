@@ -44,6 +44,8 @@ VALUE = 2
 INPUT_DIR = "../antrenare"
 OUTPUT_DIR = "../vizualizare"
 
+TEMPLATE_PATH = "../imagini_auxiliare/03.jpg"
+
 NC = 0 # no constraint
 PL = 1 # plus
 MI = 2 # minus
