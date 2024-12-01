@@ -1,6 +1,18 @@
 import matplotlib.pyplot as plt 
 import numpy as np
 
+# --------------------------- PATHS
+# INPUT_DIR = "../antrenare"
+INPUT_DIR = "../evaluare/fake_test"
+OUTPUT_DIR = "../evaluare/fisiere_solutie/463_Ionescu_Mircea"
+
+RAW_TEMPLATE_DIR = "../templates"
+TEMPLATE_DIR = "../final-templates"
+
+EMPTY_BOARD_PATH = "../imagini_auxiliare/01.jpg"
+
+TEMPLATE_PATH = "../imagini_auxiliare/04.jpg"
+
 # --------------------------- IMAGE PROCESSING
 TOP_LEFT = 0
 TOP_RIGHT = 1
@@ -46,17 +58,6 @@ VALUE = 2
 # --------------------------- MISC
 X = 0
 Y = 1
-
-# --------------------------- PATHS
-INPUT_DIR = "../antrenare"
-OUTPUT_DIR = "../evaluare/fisiere_solutie/463_Ionescu_Mircea"
-
-RAW_TEMPLATE_DIR = "../templates"
-TEMPLATE_DIR = "../final-templates"
-
-EMPTY_BOARD_PATH = "../imagini_auxiliare/01.jpg"
-
-TEMPLATE_PATH = "../imagini_auxiliare/04.jpg"
 
 NC = 0 # no constraint
 PL = 1 # plus

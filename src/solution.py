@@ -48,7 +48,7 @@ def generate_solution():
             current_turn_idx += 1
             move_score = 0
 
-        board = get_board(photo)
+        board = get_board(os.path.join(INPUT_DIR, photo))
         move_pos = get_board_change(prev_board, board)
 
         res_string = str(BOARD_Y_VALS[move_pos[Y]]) + str(BOARD_X_VALS[move_pos[X]])

@@ -5,8 +5,8 @@ import os
 from constants import *
 
 # --------------------------------------------------- related to the whole board
-def get_board(photo_name):
-    board = cv.imread(os.path.join(INPUT_DIR, photo_name))
+def get_board(photo_path):
+    board = cv.imread(os.path.join(photo_path))
     board = get_trimmed(board)
     return board
 

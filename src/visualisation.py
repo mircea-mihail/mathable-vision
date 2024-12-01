@@ -76,7 +76,7 @@ def print_train_res():
 
     for photo in photos[start_idx:stop_idx]: 
         # photo = photos[49]
-        board = get_board(photo)
+        board = get_board(os.path.join(INPUT_DIR, photo))
         move_pos = get_board_change(prev_board, board)
         res_string = str(BOARD_Y_VALS[move_pos[Y]]) + str(BOARD_X_VALS[move_pos[X]])
 
