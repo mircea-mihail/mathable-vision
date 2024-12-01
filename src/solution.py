@@ -88,3 +88,11 @@ def get_score(x, y, val, board_mat):
 
     return val * ecuations_found * BONUSES[y][x]
 
+# writes the results of the moves to the _scores output file
+def write_results(turns_file, data_set, moves_results):
+    with open(os.path.join(INPUT_DIR, turns_file), "r") as inspiration_file:
+        lines = inspiration_file.readlines()
+        with open(os.path.join(OUTPUT_DIR, str(data_set) + "_scores.txt"), "w") as file:
+            for i in range(len(lines)):
+                lines[i] = lines[i].replace("\n", "") + " " + str(moves_results[i]) + "\n"
+            file.writelines(lines)
