@@ -105,47 +105,6 @@ def get_square(board, p_x_pos, p_y_pos):
         int(p_x_pos*SQUARE_WIDTH + SQUARE_TRIM_PX) : int((p_x_pos+1) * SQUARE_WIDTH - SQUARE_TRIM_PX)
     ].copy()
 
-# remaps the square to only contain the inner digit, no white border around it
-def remap_square(mask):
-    bounds = np.array(get_digits_contour(mask), dtype = "float32")
-    square_destination = np.array(
-    [
-        [0,0],
-        [SQUARE_WIDTH,0],
-        [SQUARE_WIDTH,SQUARE_WIDTH],
-        [0,SQUARE_WIDTH]
-    ], dtype = "float32")
-
-    mapping = cv.getPerspectiveTransform(bounds, square_destination)
-    mask = cv.warpPerspective(mask, mapping, (SQUARE_WIDTH, SQUARE_WIDTH))
-
-    mask = mask == MAX_PX_VAL
-    mask = mask * MAX_PX_VAL
-    return mask
-
-# filters noise, thickens and remaps the digit to fit the whole square
-def process_square(p_sq):
-    hsv_sq = cv.cvtColor(p_sq, cv.COLOR_BGR2HSV)
-    sat_mask = np.zeros((p_sq.shape[0], p_sq.shape[1]), np.uint8)
-    val_mask = np.zeros((p_sq.shape[0], p_sq.shape[1]), np.uint8)
-
-    _, val_mask = cv.threshold(hsv_sq[:, :, VALUE], SQUARE_MIN_VALUE, 256, cv.THRESH_BINARY)
-    _, sat_mask = cv.threshold(hsv_sq[:, :, VALUE], 256, SQUARE_MAX_SATURATION, cv.THRESH_BINARY)
-
-    mask = cv.bitwise_or(sat_mask, val_mask)
-
-    filter_size = 3
-    kill_noise_kernel = np.ones((filter_size, filter_size), np.uint8)
-    mask = cv.erode(mask, kill_noise_kernel, iterations=1)
-    # mask = cv2.dilate(mask, kill_noise_kernel, iterations=1)
-
-    inflation = 4
-    kernel = np.ones((inflation, inflation), np.uint8) 
-    mask = cv.dilate(mask, kernel, iterations=1) 
-    # mask = cv.threshold(mask, 255/2, 256, cv.THRESH_BINARY)
-
-    return remap_square(mask)
-
 # returns the points that border the actual digits for a remapping
 def get_digits_contour(mask):
     contours, _ = cv.findContours(mask,  cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
@@ -195,7 +154,49 @@ def get_digits_contour(mask):
             populated_corners = True
 
     return [top_left, top_right, bottom_right, bottom_left]
-    
+ 
+
+# remaps the square to only contain the inner digit, no white border around it
+def remap_square(mask):
+    bounds = np.array(get_digits_contour(mask), dtype = "float32")
+    square_destination = np.array(
+    [
+        [0,0],
+        [SQUARE_WIDTH,0],
+        [SQUARE_WIDTH,SQUARE_WIDTH],
+        [0,SQUARE_WIDTH]
+    ], dtype = "float32")
+
+    mapping = cv.getPerspectiveTransform(bounds, square_destination)
+    mask = cv.warpPerspective(mask, mapping, (SQUARE_WIDTH, SQUARE_WIDTH))
+
+    mask = mask == MAX_PX_VAL
+    mask = mask * MAX_PX_VAL
+    return mask
+
+# filters noise, thickens and remaps the digit to fit the whole square
+def process_square(p_sq):
+    hsv_sq = cv.cvtColor(p_sq, cv.COLOR_BGR2HSV)
+    sat_mask = np.zeros((p_sq.shape[0], p_sq.shape[1]), np.uint8)
+    val_mask = np.zeros((p_sq.shape[0], p_sq.shape[1]), np.uint8)
+
+    _, val_mask = cv.threshold(hsv_sq[:, :, VALUE], SQUARE_MIN_VALUE, 256, cv.THRESH_BINARY)
+    _, sat_mask = cv.threshold(hsv_sq[:, :, VALUE], 256, SQUARE_MAX_SATURATION, cv.THRESH_BINARY)
+
+    mask = cv.bitwise_or(sat_mask, val_mask)
+
+    filter_size = 3
+    kill_noise_kernel = np.ones((filter_size, filter_size), np.uint8)
+    mask = cv.erode(mask, kill_noise_kernel, iterations=1)
+    # mask = cv2.dilate(mask, kill_noise_kernel, iterations=1)
+
+    inflation = 4
+    kernel = np.ones((inflation, inflation), np.uint8) 
+    mask = cv.dilate(mask, kernel, iterations=1) 
+    # mask = cv.threshold(mask, 255/2, 256, cv.THRESH_BINARY)
+
+    return remap_square(mask)
+   
 # --------------------------------------------------- templates
 
 # generates the template files using the best of the provided refference photos
