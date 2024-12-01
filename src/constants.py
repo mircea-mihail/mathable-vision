@@ -49,8 +49,11 @@ Y = 1
 
 # --------------------------- PATHS
 INPUT_DIR = "../antrenare"
-OUTPUT_DIR = "../vizualizare"
-TEMPLATE_DIR = "../templates"
+OUTPUT_DIR = "../evaluare/fisiere_solutie/463_Ionescu_Mircea"
+
+RAW_TEMPLATE_DIR = "../templates"
+TEMPLATE_DIR = "../final-templates"
+
 EMPTY_BOARD_PATH = "../imagini_auxiliare/01.jpg"
 
 TEMPLATE_PATH = "../imagini_auxiliare/04.jpg"
