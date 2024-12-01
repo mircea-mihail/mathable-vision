@@ -5,6 +5,10 @@ import os
 from constants import *
 
 # --------------------------------------------------- related to the whole board
+def get_board(photo_name):
+    board = cv.imread(os.path.join(INPUT_DIR, photo_name))
+    board = get_trimmed(board)
+    return board
 
 # returns the biggest contour in the immage (to get the board from the image)
 def get_max_countour(mask):
@@ -220,7 +224,7 @@ def generate_templates():
             sq = get_square(board, j, i)
             mask = process_square(sq)
 
-            cv.imwrite(os.path.join(TEMPLATE_DIR, str(NUMBERS[idx]) + ".png"), mask)
+            cv.imwrite(os.path.join(RAW_TEMPLATE_DIR, str(NUMBERS[idx]) + ".png"), mask)
 
             idx += 1 
 
@@ -248,8 +252,11 @@ def get_similitude(img, templates):
         #             sim_score += 1
         
         sim_score = np.sum(img == template)
+        # if cur_nr == 28:
+        #     print(sim_score/(SQUARE_WIDTH ** 2), cur_nr)
 
         if sim_score > best_score:  
+            # print(sim_score/(SQUARE_WIDTH ** 2), cur_nr)
             best_score = sim_score
             best_number = cur_nr
 
