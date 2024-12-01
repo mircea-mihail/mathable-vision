@@ -51,6 +51,7 @@ Y = 1
 INPUT_DIR = "../antrenare"
 OUTPUT_DIR = "../vizualizare"
 TEMPLATE_DIR = "../templates"
+EMPTY_BOARD_PATH = "../imagini_auxiliare/01.jpg"
 
 TEMPLATE_PATH = "../imagini_auxiliare/04.jpg"
 
@@ -110,6 +111,8 @@ NUMBERS = \
     90
 ]
 
+BOARD_X_VALS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N"]
+BOARD_Y_VALS = [ 1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  11,  12,  13, 14]
 
 def testConsts():
     mat = []
