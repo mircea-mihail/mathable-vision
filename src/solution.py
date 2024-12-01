@@ -3,6 +3,73 @@ import cv2 as cv
 from image_processing import *
 from constants import *
 
+# generates the solution files for all the photos in the input dir
+def generate_solution():
+    files = os.listdir(INPUT_DIR)
+
+    photos = sorted([file for file in files if os.path.splitext(file)[1] == ".jpg"])
+    turns_files = sorted([file for file in files if file.split("_")[1] == "turns.txt"])
+
+
+    data_set = -1
+    templates = load_templates()
+    moves_results = []
+
+    for photo in photos: 
+        current_set = int(photo.split('_')[0])
+
+        # switch game
+        if current_set != data_set:
+            if data_set != -1:
+                print("\nscores:\n", moves_results, "\n\n", sep="")
+                moves_results.append(move_score)
+                write_results(turns_file, data_set, moves_results)
+
+            #start fresh
+            prev_board = get_board(EMPTY_BOARD_PATH)
+            move_matrix = init_move_matrix()
+            data_set = current_set
+
+            turns_file = [file for file in turns_files if int(file.split("_")[0]) == data_set][0]
+            print(turns_file)
+            print("moves:")
+            players_moves = get_players_moves(turns_file)
+            players_moves.append(1000)
+
+            moves_results = []
+            current_move = 0
+            current_turn_idx = 0
+            move_score = 0
+
+        # switch player
+        if current_move >= players_moves[current_turn_idx + 1]:
+            print()
+            moves_results.append(move_score)
+            current_turn_idx += 1
+            move_score = 0
+
+        board = get_board(photo)
+        move_pos = get_board_change(prev_board, board)
+
+        res_string = str(BOARD_Y_VALS[move_pos[Y]]) + str(BOARD_X_VALS[move_pos[X]])
+        move_val = get_similitude(process_square(get_square(process_board(board), move_pos[X], move_pos[Y])), templates)
+        res_string = res_string + " " + str(move_val)
+
+        # write step
+        with open(os.path.join(OUTPUT_DIR, os.path.splitext(photo)[0] + ".txt"), 'w') as file:
+            file.write(res_string)
+
+        move_matrix[move_pos[Y], move_pos[X]] = move_val
+        move_score += get_score(move_pos[X], move_pos[Y], move_val, move_matrix)
+        prev_board = board
+        current_move += 1 
+
+        print(move_score, ", ", end=" ")
+
+    moves_results.append(move_score)
+    print("\nscores:\n", moves_results, "\n\n", sep="")
+    write_results(turns_file, data_set, moves_results)
+
 def get_board_change(prev_board, cur_board):
     diff_board = cv.absdiff(prev_board, cur_board)
 
@@ -92,6 +159,9 @@ def get_score(x, y, val, board_mat):
 def write_results(turns_file, data_set, moves_results):
     with open(os.path.join(INPUT_DIR, turns_file), "r") as inspiration_file:
         lines = inspiration_file.readlines()
+        with open(os.path.join(OUTPUT_DIR, str(data_set) + "_turns.txt"), "w") as file:
+            file.writelines(lines)
+
         with open(os.path.join(OUTPUT_DIR, str(data_set) + "_scores.txt"), "w") as file:
             for i in range(len(lines)):
                 lines[i] = lines[i].replace("\n", "") + " " + str(moves_results[i]) + "\n"
