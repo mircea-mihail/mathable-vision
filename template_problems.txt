@@ -1,0 +1,20 @@
+need rotation:
+	11 - 1rl
+	20 - 1rl
+	24 - 1rr
+	25 - 1rr
+	27 - 1rr
+	28 - 1rl
+
+need completion:
+	a very little 
+		6
+		7
+		20
+	major:
+		24
+		42
+		90
+		
+
+

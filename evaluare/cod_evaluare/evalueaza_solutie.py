@@ -29,7 +29,8 @@ def compare_annotations_position_token(filename_predicted,filename_gt,verbose=0)
 	return points_positions, points_tokens
 
 #change this on your machine pointing to your results (txt files)
-predictions_path_root = "../fisiere_solutie/331_Alexe_Bogdan/"
+predictions_path_root = "../fisiere_solutie/463_Ionescu_Mircea/"
+#predictions_path_root = "../fisiere_solutie/331_Alexe_Bogdan/"
 
 #change this on your machine to point to the ground-truth test
 gt_path_root = "fake_test_gt/"
